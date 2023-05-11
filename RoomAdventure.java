@@ -12,71 +12,71 @@ class Room {
 
     // declare instance variables
     private String                  name;
-    public  HashMap<String, Room>   exits      = new HashMap<String, Room>();
-    public  HashMap<String, String> items      = new HashMap<String, String>();
-    public  ArrayList<String>       grabbables = new ArrayList<String>();
+    public  Map<String, Room>   exits      = new HashMap<>();
+    public  Map<String, String> items      = new HashMap<>();
+    public  List<String>       grabbables = new ArrayList<>();
 
     // room constructor
-    public Room(String roomName) {
-        name = roomName;
+    public Room(String name) {
+        this.name = name;
     }
 
     // accessors and mutators for instance variables
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public HashMap<String, Room> getExits() {
-        return exits;
+    public Map<String, Room> getExits() {
+        return this.exits;
     }
 
     public void setExits(HashMap<String, Room> exits) {
         this.exits = exits;
     }
 
-    public HashMap<String, String> getItems() {
-        return items;
+    public Map<String, String> getItems() {
+        return this.items;
     }
 
-    public void setItems(HashMap<String, String> items) {
+    public void setItems(Map<String, String> items) {
         this.items = items;
     }
 
-    public ArrayList<String> getGrabbables() {
-        return grabbables;
+    public List<String> getGrabbables() {
+        return this.grabbables;
     }
 
-    public void setGrabbables(ArrayList<String> grabbables) {
+    public void setGrabbables(List<String> grabbables) {
         this.grabbables = grabbables;
     }
 
     // creates a room
     public void addExit(String exit, Room room) {
-        exits.put(exit, room);
+        this.exits.put(exit, room);
     }
 
     // adds an item to a room
     public void addItem(String item, String desc) {
-        items.put(item, desc);
+        this.items.put(item, desc);
     }
 
     // adds grabbable to a room
     public void addGrabbable(String item) {
-        grabbables.add(item);
+        this.grabbables.add(item);
     }
 
     // removes grabbable from the room
     public void delGrabbable(String item) {
-        grabbables.remove(item);
+        this.grabbables.remove(item);
     }
 
     // string function to print location and what you see
     public String toString() {
-        String result = "You are in " + name + ".\n" + "You see: ";
+        String result = "You are in " + this.name + ".\n" + "You see: ";
 
         for (String item : items.keySet()) {
             result += item + ", ";
@@ -96,21 +96,21 @@ class Room {
 
 class Game {
 
-    ArrayList<String> exitActions = new ArrayList<String>(Arrays.asList("quit", "exit", "bye", "q"));
+    private static final List<String> EXIT_ACTIONS = List.of("quit", "exit", "bye", "q");
 
     // statuses
-    String statusCmdErr       = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
-    String statusDead         = "You are dead.";
-    String statusBadExit      = "Invalid exit.";
-    String statusRoomChange   = "Room changed.";
-    String statusGrabbed      = "Item grabbed.";
-    String statusBadGrabbable = "I can't grab that.";
-    String statusBadItem      = "I don't see that.";
-    String status;
+    private static final String STATUS_CMD_ERR = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
+    private static final String STATUS_DEAD      = "You are dead.";
+    private static final String STATUS_BAD_EXIT    = "Invalid exit.";
+    private static final String STATUS_ROOM_CHANGE = "Room changed.";
+    private static final String STATUS_GRABBED       = "Item grabbed.";
+    private static final String STATUS_BAD_GRABBABLE = "I can't grab that.";
+    private static final String STATUS_BAD_ITEM      = "I don't see that.";
+    private String              status;
 
     // instance variable for the inventory and current room
     private Room              currentRoom;
-    private ArrayList<String> inventory = new ArrayList<String>();
+    private List<String> inventory = new ArrayList<>();
 
     public static void main(String[] args) {
         Game game = new Game();
@@ -165,44 +165,46 @@ class Game {
 
     public void setStatus(String status) {
         if (currentRoom == null) {
-            status = statusDead;
+            // This is why one should be in the habit of using `this.`
+            this.status = STATUS_DEAD;
         } else {
             Collections.sort(inventory);
             String content = currentRoom + "\nYou are carrying: " + inventory + "\n\n" + status;
+            // I assume that this not doing anything is intentional.
         }
     }
 
     public void handleGo(String destination) {
-        status = statusBadExit;
+        this.status = STATUS_BAD_EXIT;
 
         for (String exit : currentRoom.exits.keySet()) {
-            if (destination == exit) {
-                currentRoom = currentRoom.exits.get(destination);
-                status = statusRoomChange;
+            if (destination.equals(exit)) { // String comparison can not be done with `==`
+                this.currentRoom = currentRoom.exits.get(destination);
+                this.status = STATUS_ROOM_CHANGE;
             }
         }
-        setStatus(status);
+        setStatus(this.status);
     }
 
     public void handleLook(String item) {
         for (String thing : currentRoom.items.keySet()) {
-            if (item == thing) {
-                status = currentRoom.items.get(item);
+            if (item.equals(thing)) { // String comparison can not be done with `==`
+                this.status = currentRoom.items.get(item);
             }
         }
-        setStatus(status);
+        setStatus(this.status);
     }
 
     public void handleTake(String grabbable) {
-        status = statusBadGrabbable;
+        this.status = STATUS_BAD_GRABBABLE;
 
         for (int i = 1; i < currentRoom.grabbables.size(); i++) {
-            if (grabbable == currentRoom.grabbables.get(i)) {
-                inventory.add(grabbable);
-                currentRoom.delGrabbable(grabbable);
-                status = statusGrabbed;
+            if (grabbable.equals(currentRoom.grabbables.get(i))) { // String comarison can not be done with `==`
+                this.inventory.add(grabbable);
+                this.currentRoom.delGrabbable(grabbable);
+                this.status = STATUS_GRABBED;
             }
         }
-        setStatus(status);
+        setStatus(this.status);
     }
 }
