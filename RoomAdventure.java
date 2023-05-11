@@ -108,6 +108,13 @@ class Game {
         Game game = new Game();
         game.setupGame();
         game.setStatus("");
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            String line = sc.nextLine();
+            if (EXIT_ACTIONS.contains(line.toLowerCase())) {
+                break;
+            }
+        }
     }
 
     public void setupGame() {
