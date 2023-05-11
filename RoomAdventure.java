@@ -11,10 +11,10 @@ import java.util.*;
 class Room {
 
     // declare instance variables
-    private String                  name;
+    private String              name;
     public  Map<String, Room>   exits      = new HashMap<>();
     public  Map<String, String> items      = new HashMap<>();
-    public  List<String>       grabbables = new ArrayList<>();
+    public  List<String>        grabbables = new ArrayList<>();
 
     // room constructor
     public Room(String name) {
@@ -99,17 +99,17 @@ class Game {
     private static final List<String> EXIT_ACTIONS = List.of("quit", "exit", "bye", "q");
 
     // statuses
-    private static final String STATUS_CMD_ERR = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
-    private static final String STATUS_DEAD      = "You are dead.";
-    private static final String STATUS_BAD_EXIT    = "Invalid exit.";
-    private static final String STATUS_ROOM_CHANGE = "Room changed.";
+    private static final String STATUS_CMD_ERR       = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
+    private static final String STATUS_DEAD          = "You are dead.";
+    private static final String STATUS_BAD_EXIT      = "Invalid exit.";
+    private static final String STATUS_ROOM_CHANGE   = "Room changed.";
     private static final String STATUS_GRABBED       = "Item grabbed.";
     private static final String STATUS_BAD_GRABBABLE = "I can't grab that.";
     private static final String STATUS_BAD_ITEM      = "I don't see that.";
-    private String              status;
+    private              String status;
 
     // instance variable for the inventory and current room
-    private Room              currentRoom;
+    private Room         currentRoom;
     private List<String> inventory = new ArrayList<>();
 
     public static void main(String[] args) {
