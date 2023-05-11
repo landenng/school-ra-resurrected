@@ -111,9 +111,10 @@ class Game {
     private Room currentRoom;
     private ArrayList <String> inventory = new ArrayList <String>();
     
-    public void Game() {
-        setupGame();
-        setStatus("");
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.setupGame();
+        game.setStatus("");
     }
 
     public void setupGame () {
