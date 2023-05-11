@@ -160,11 +160,11 @@ class Game {
         r4.addGrabbable("book");
 
         // set current room to room 1
-        currentRoom = r1;
+        this.currentRoom = r1;
     }
 
     public void setStatus(String status) {
-        if (currentRoom == null) {
+        if (this.currentRoom == null) {
             // This is why one should be in the habit of using `this.`
             this.status = STATUS_DEAD;
         } else {
@@ -183,28 +183,28 @@ class Game {
                 this.status = STATUS_ROOM_CHANGE;
             }
         }
-        setStatus(this.status);
+        this.setStatus(this.status);
     }
 
     public void handleLook(String item) {
-        for (String thing : currentRoom.items.keySet()) {
+        for (String thing : this.currentRoom.items.keySet()) {
             if (item.equals(thing)) { // String comparison can not be done with `==`
-                this.status = currentRoom.items.get(item);
+                this.status = this.currentRoom.items.get(item);
             }
         }
-        setStatus(this.status);
+        this.setStatus(this.status);
     }
 
     public void handleTake(String grabbable) {
         this.status = STATUS_BAD_GRABBABLE;
 
-        for (int i = 1; i < currentRoom.grabbables.size(); i++) {
-            if (grabbable.equals(currentRoom.grabbables.get(i))) { // String comarison can not be done with `==`
+        for (int i = 1; i < this.currentRoom.grabbables.size(); i++) {
+            if (grabbable.equals(this.currentRoom.grabbables.get(i))) { // String comarison can not be done with `==`
                 this.inventory.add(grabbable);
                 this.currentRoom.delGrabbable(grabbable);
                 this.status = STATUS_GRABBED;
             }
         }
-        setStatus(this.status);
+        this.setStatus(this.status);
     }
 }
