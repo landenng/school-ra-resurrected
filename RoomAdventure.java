@@ -78,17 +78,9 @@ class Room {
     public String toString() {
         String result = "You are in " + this.name + ".\n" + "You see: ";
 
-        for (String item : items.keySet()) {
-            result += item + ", ";
-        }
+        result += String.join(",", this.items.keySet());
 
-        result += "/n";
-
-        result += "Exits: ";
-        for (String exit : exits.keySet()) {
-            result += exit + ", ";
-        }
-        result += "\n";
+        result += "\nExits: " + String.join(",", exits.keySet()) + "\n";
 
         return result;
     }
@@ -96,7 +88,7 @@ class Room {
 
 class Game {
 
-    private static final List<String> EXIT_ACTIONS = List.of("quit", "exit", "bye", "q");
+    private static final Set<String> EXIT_ACTIONS = Set.of("quit", "exit", "bye", "q");
 
     // statuses
     private static final String STATUS_CMD_ERR       = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
@@ -109,8 +101,8 @@ class Game {
     private              String status;
 
     // instance variable for the inventory and current room
-    private Room         currentRoom;
-    private List<String> inventory = new ArrayList<>();
+    private       Room         currentRoom;
+    private final List<String> inventory = new ArrayList<>();
 
     public static void main(String[] args) {
         Game game = new Game();
@@ -165,7 +157,6 @@ class Game {
 
     public void setStatus(String status) {
         if (this.currentRoom == null) {
-            // This is why one should be in the habit of using `this.`
             this.status = STATUS_DEAD;
         } else {
             Collections.sort(inventory);
@@ -177,20 +168,18 @@ class Game {
     public void handleGo(String destination) {
         this.status = STATUS_BAD_EXIT;
 
-        for (String exit : currentRoom.exits.keySet()) {
-            if (destination.equals(exit)) { // String comparison can not be done with `==`
-                this.currentRoom = currentRoom.exits.get(destination);
-                this.status = STATUS_ROOM_CHANGE;
-            }
+        Room dest = this.currentRoom.exits.get(destination);
+        if (dest != null) {
+            this.currentRoom = dest;
+            this.status = STATUS_ROOM_CHANGE;
         }
         this.setStatus(this.status);
     }
 
     public void handleLook(String item) {
-        for (String thing : this.currentRoom.items.keySet()) {
-            if (item.equals(thing)) { // String comparison can not be done with `==`
-                this.status = this.currentRoom.items.get(item);
-            }
+        String status = this.currentRoom.items.get(item);
+        if (status != null) {
+            this.status = this.currentRoom.items.get(item);
         }
         this.setStatus(this.status);
     }
@@ -198,12 +187,10 @@ class Game {
     public void handleTake(String grabbable) {
         this.status = STATUS_BAD_GRABBABLE;
 
-        for (int i = 1; i < this.currentRoom.grabbables.size(); i++) {
-            if (grabbable.equals(this.currentRoom.grabbables.get(i))) { // String comarison can not be done with `==`
-                this.inventory.add(grabbable);
-                this.currentRoom.delGrabbable(grabbable);
-                this.status = STATUS_GRABBED;
-            }
+        if (this.currentRoom.grabbables.contains(grabbable)) {
+            this.inventory.add(grabbable);
+            this.currentRoom.delGrabbable(grabbable);
+            this.status = STATUS_GRABBED;
         }
         this.setStatus(this.status);
     }
