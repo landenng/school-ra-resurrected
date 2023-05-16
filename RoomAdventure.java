@@ -106,27 +106,31 @@ class Game {
         Game game = new Game();
         game.setupGame();
         game.setStatus("");
+
+        Scanner s = new Scanner(System.in); // Creating this each iteration of the loop is pointless and expensive
+
         gameLoop:
         while (true) {
-            Scanner s = new Scanner(System.in);
             String input = s.nextLine();
             String[] inputArray = input.toLowerCase().split(" ");
-            if (inputArray.length == 2) {
-                switch (inputArray[0]) {
-                    case "go" -> game.handleGo(inputArray[1]);
-                    case "look" -> game.handleLook(inputArray[1]);
-                    case "take" -> game.handleTake(inputArray[1]);
-                    case "quit", "exit", "bye", "q" -> {
-                        break gameLoop;
-                    }
-                    default -> {
-                        game.status = STATUS_CMD_ERR;
-                        game.setStatus(game.status);
-                    }
-                }
-            } else {
+
+            if (inputArray.length != 2) { // I'm a big fan of an "early return", especially in java, since indentations get crazy
                 game.status = STATUS_CMD_ERR;
                 game.setStatus(game.status);
+                continue;
+            }
+
+            switch (inputArray[0]) {
+                case "go" -> game.handleGo(inputArray[1]);
+                case "look" -> game.handleLook(inputArray[1]);
+                case "take" -> game.handleTake(inputArray[1]);
+                case "quit", "exit", "bye", "q" -> {
+                    break gameLoop;
+                }
+                default -> {
+                    game.status = STATUS_CMD_ERR;
+                    game.setStatus(game.status);
+                }
             }
         }
     }
@@ -176,20 +180,20 @@ class Game {
         this.currentRoom = r1;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(String status /* <-- This parameter is not used... */) {
         if (this.currentRoom == null) {
             this.status = STATUS_DEAD;
-            System.out.println("\n" + this.status + "\n");
+            System.out.printf("\n%s\n\n", this.status);
             System.exit(0);
         } else {
             Collections.sort(inventory);
-            System.out.println("\n" + this.status + "\n");
-            this.status = this.currentRoom + "\nYou are carrying: " + this.inventory + "\n\nWhat would you like to do? ";
+            System.out.printf("\n%s\n\n", this.status);
+            this.status = "%s\nYou are carrying: %s\n\nWhat would you like to do? ".formatted(this.currentRoom, this.inventory);
             System.out.println(this.status);
         }
     }
 
-    // try a for loop or some shit
+    // try a for loop or some shit // Interesting comment...
     public void handleGo(String destination) {
         this.status = STATUS_BAD_EXIT;
 
@@ -199,7 +203,7 @@ class Game {
                 this.currentRoom = dest;
                 this.status = STATUS_ROOM_CHANGE;
             } else {
-                this.currentRoom = dest;
+                this.currentRoom = null; // `dest` is always null at this point, so it's better to just put `null`
                 this.status = STATUS_DEAD;
             }
         }
