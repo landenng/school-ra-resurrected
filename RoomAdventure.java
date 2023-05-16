@@ -4,7 +4,7 @@
 // desc: Room adventure implemented in Java... yay...
 //////////////////////////////////////////////////////////////////////////////////
 
-// allows us to use dictionaries and array lists in Java I think
+// allows us to use dictionaries and array lists in Java
 
 import java.util.*;
 
@@ -88,8 +88,6 @@ class Room {
 
 class Game {
 
-    private static final Set<String> EXIT_ACTIONS = Set.of("quit", "exit", "bye", "q");
-
     // statuses
     private static final String STATUS_CMD_ERR       = "I don't understand. Try <verb> <noun>. Valid verbs are 'go', 'look', and 'take'.";
     private static final String STATUS_DEAD          = "You are dead.";
@@ -108,11 +106,24 @@ class Game {
         Game game = new Game();
         game.setupGame();
         game.setStatus("");
-        Scanner sc = new Scanner(System.in);
-        while (true) {
-            String line = sc.nextLine();
-            if (EXIT_ACTIONS.contains(line.toLowerCase())) {
-                break;
+        gameLoop: while (true) {
+            Scanner s = new Scanner(System.in);
+            String input = s.nextLine();
+            String[] inputArray = input.toLowerCase().split(" ");
+            if (inputArray.length == 2){
+                switch (inputArray[0]) {
+                    case "go" -> game.handleGo(inputArray[1]);
+                    case "look" -> game.handleLook(inputArray[1]);
+                    case "take" -> game.handleTake(inputArray[1]);
+                    case "quit", "exit", "bye", "q" -> {break gameLoop;}
+                    default -> {
+                        game.status = STATUS_CMD_ERR;
+                        game.setStatus(game.status);
+                    }
+                }
+            } else {
+                game.status = STATUS_CMD_ERR;
+                game.setStatus(game.status);
             }
         }
     }
@@ -165,27 +176,37 @@ class Game {
     public void setStatus(String status) {
         if (this.currentRoom == null) {
             this.status = STATUS_DEAD;
+            System.out.println("\n" + this.status + "\n");
+            System.exit(0);
         } else {
             Collections.sort(inventory);
-            String content = currentRoom + "\nYou are carrying: " + inventory + "\n\n" + status;
-            // I assume that this not doing anything is intentional.
+            System.out.println("\n" + this.status + "\n");
+            this.status = this.currentRoom + "\nYou are carrying: " + this.inventory + "\n\nWhat would you like to do? ";
+            System.out.println(this.status);
         }
     }
 
+    // try a for loop or some shit
     public void handleGo(String destination) {
         this.status = STATUS_BAD_EXIT;
 
-        Room dest = this.currentRoom.exits.get(destination);
-        if (dest != null) {
-            this.currentRoom = dest;
-            this.status = STATUS_ROOM_CHANGE;
+        if (this.currentRoom.exits.containsKey(destination)) {
+            Room dest = this.currentRoom.exits.get(destination);
+            if (dest != null) {
+                this.currentRoom = dest;
+                this.status = STATUS_ROOM_CHANGE;
+            } else {
+                this.currentRoom = dest;
+                this.status = STATUS_DEAD;
+            }
         }
         this.setStatus(this.status);
     }
 
     public void handleLook(String item) {
-        String status = this.currentRoom.items.get(item);
-        if (status != null) {
+        this.status = STATUS_BAD_ITEM;
+
+        if (this.currentRoom.items.containsKey(item)) {
             this.status = this.currentRoom.items.get(item);
         }
         this.setStatus(this.status);
