@@ -106,16 +106,19 @@ class Game {
         Game game = new Game();
         game.setupGame();
         game.setStatus("");
-        gameLoop: while (true) {
+        gameLoop:
+        while (true) {
             Scanner s = new Scanner(System.in);
             String input = s.nextLine();
             String[] inputArray = input.toLowerCase().split(" ");
-            if (inputArray.length == 2){
+            if (inputArray.length == 2) {
                 switch (inputArray[0]) {
                     case "go" -> game.handleGo(inputArray[1]);
                     case "look" -> game.handleLook(inputArray[1]);
                     case "take" -> game.handleTake(inputArray[1]);
-                    case "quit", "exit", "bye", "q" -> {break gameLoop;}
+                    case "quit", "exit", "bye", "q" -> {
+                        break gameLoop;
+                    }
                     default -> {
                         game.status = STATUS_CMD_ERR;
                         game.setStatus(game.status);
